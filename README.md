@@ -3,8 +3,6 @@
 # Autonomous Blimp Control using Deep Reinforcement Learning
 =================================================================
 
-## For more information, read our preprint on arXiv: "https://arxiv.org/abs/2203.05360"
---------------------------------------------------------------
 
 # Copyright and License
 
@@ -56,7 +54,7 @@ In the same catkin_ws as airship_simulation:
 1. setup bimp_env
 ```console
 cd ~/catkin_ws/src
-git clone -b v2.0 https://github.com/robot-perception-group/AutonomousBlimpDRL.git
+git clone -b end version https://github.com/robot-perception-group/robust_deep_residual_blimp.git
 cd ~/catkin_ws/src/AutonomousBlimpDRL/blimp_env
 pip install .
 ```
@@ -81,17 +79,16 @@ echo 'export PYTHONPATH=$PYTHONPATH:$HOME/catkin_ws/src/AutonomousBlimpDRL/blimp
 source ~/.bashrc
 ```
 
-# Start Training
-This will run ppo for 12days (2 days each * 3 seeds * 2 mixer_type)
+# Start Training (Blimp Simulator)
+Open file in ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rlyang_script/main.py, set PID to True if training with the PID controller, else set it to False.
+
+One agent will be trained for one day. In terminal, start the training progress
 ```console
-python3 ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rllib_script/residualplanarnavigateenv_ppo.py --use_lstm
+python3 ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rlyang_script/main.py
 ```
 
-Viualize
-* Training progress. In new terminal, enter the log folder and start tensorboard
-```console
-tensorboard --logdir ~/ray_results/.
-```
+
+Viualize (Blimp Simulator)
 * Gazebo. In new terminal, start gzcilent
 ```console
 gzcilent
@@ -107,33 +104,36 @@ To close the simulation
 ```
 
 
-# Reproduction of results:
+# Reproduction of results (Blimp Simulator)
 
 --------------
-## Experiment 1: yaw control task training progress
+## Test: Coil track run with different buoyancy, wind and agent-controller combinations
 --------------
 ```console
-python3 ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rllib_script/yawcontrolenv_ppo.py
-```
-use lstm network
-```console
-python3 ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rllib_script/yawcontrolenv_ppo.py --use_lstm
+python3 ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rlyang_script/test.py
 ```
 
---------------
-## Experiment 2: blimp control task training progress
---------------
+
+
+# Start Training (TurtleSim Simulator)
+First start 8 TurtleSim simulators
 ```console
-python3 ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rllib_script/residualplanarnavigateenv_ppo.py --use_lstm
+roslaunch turtlebot multi.launch
 ```
 
---------------
-## Experiment 3: robustness evaluation
---------------
+Open a new terminal. Then train 12 agents using 3 seeds per group (group 1: PID, q=0; group 2: Hinf, q=0; group 3: PID, q~Normal(0, 1); 
+group 4: Hinf, q~Normal(0, 1);)  
 ```console
-bash ~/catkin_ws/src/AutonomousBlimpDRL/RL/rl/rllib_script/test_agent/run.sh
+python3 ~/catkin_ws/src/turtlebot/scripts/RL.py
 ```
 
+# Reproduction of results (TurtleSim Simulator)
+
+--------------
+## Test: Plant input disturbance will be enhanced by 5 times and 100 turtles per test are to be caught
+```console
+python3 ~/catkin_ws/src/turtlebot/scripts/test.py
+```
 
 # Cite
 ```
